@@ -9,10 +9,10 @@ export function addErrorMiddleware(server: Express) {
 }
 
 
-export function verifyAccess(err: TypeError, req: Request, res: Response, next: NextFunction) {
-  if (true) {
+export function verifyAccess(req: Request, res: Response, next: NextFunction) {
+  if (req.get('X-TEST-AUTH') === 'TRUE') {
     return next()
   }
 
-  res.status(401);
+  return res.sendStatus(401);
 }
