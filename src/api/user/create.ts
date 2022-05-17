@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-export const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  return res.sendStatus(200);
+export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  res.sendStatus(200);
 }

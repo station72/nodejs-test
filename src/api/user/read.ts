@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+export const getUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const idParam: string = req.params.id;
-  return res.sendStatus(200);
+  res.sendStatus(200);
 }

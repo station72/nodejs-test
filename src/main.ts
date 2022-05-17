@@ -1,10 +1,10 @@
-import express, { Express } from "express";
-import { initAllRoutes } from "./api";
-import { addErrorMiddleware } from './middlewares';
+import express from "express";
+import { getAllRoutes } from "./api";
+import { errorMiddleware } from './middlewares';
 
 const server = express();
 
-initAllRoutes(server);
-addErrorMiddleware(server);
+server.use('/api', getAllRoutes())
+server.use(errorMiddleware)
 
 server.listen(3334);
