@@ -9,7 +9,7 @@ import asyncHandler from "express-async-handler"
 export const usersApiRouter = Router()
   .post('/', verifyAccess, asyncHandler(createUser))
   .get(`/:id`, asyncHandler(getUser))
-  .put('/', verifyAccess, asyncHandler(updateUser))
+  .put('/:id', verifyAccess, asyncHandler<any>(updateUser))
   .delete(`/:id`, verifyAccess, asyncHandler<any>(deleteUser))
 
 

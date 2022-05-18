@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { userModel } from "../../data";
-import bcryptjs from "bcryptjs";
-import { UserCreateInputDto } from "./dto";
-import { salt } from "./common";
+import { hashPassword } from "./common";
+
+import { UserCreateInputDto } from "./dto/user.create.input.dto";
 
 export const createUser = async (
   req: Request<{}, {}, UserCreateInputDto, {}, {}>,
@@ -12,7 +12,7 @@ export const createUser = async (
   UserCreateInputDto.validate(req.body);
 
   const { login, name, password } = req.body;
-  const passwordHash = await bcryptjs.hash(password, salt);
+  const passwordHash = await hashPassword(password);
 
   try {
     const createdUser = await userModel.create([
@@ -31,9 +31,8 @@ export const createUser = async (
       );
 
     res.json({
-      id: createdUser[0].id
+      id: createdUser[0].id,
     });
-
   } catch (error) {
     if (error?.code === 11000 && error?.keyValue?.login) {
       throw new Error("login already exists");

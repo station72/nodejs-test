@@ -1,6 +1,39 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from "express";
+import { IUser, userModel } from "../../data";
+import { hashPassword } from "./common";
+import { ObjectIdInputDto } from "./dto/objectid.input.dto";
+import { IUserReadOutputDto } from './dto/user.read.output.dto';
+import { UserUpsertInputDto } from "./dto/user.upsert.input.dto";
 
-export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const idParam: string = req.params['id'];
-  res.sendStatus(200);
-}
+type UserUpsertInputDtoNoId = Omit<UserUpsertInputDto, "id">;
+
+export const updateUser = async (
+  req: Request<ObjectIdInputDto, {}, UserUpsertInputDtoNoId>,
+  res: Response<IUserReadOutputDto>,
+  next: NextFunction
+): Promise<void> => {
+  const id: string = req.params["id"];
+  const dto = { ...req.body, id };
+  UserUpsertInputDto.validate(dto);
+
+  
+  let hashPass = !dto.password ? undefined : await hashPassword(dto.password);
+
+  const newUserData: Omit<IUser, "id" | "login"> = {
+    name: dto.name,
+    passwordHash: hashPass,
+  };
+
+  const result = await userModel.findOneAndUpdate(
+    {
+      id,
+    },
+    newUserData
+  );
+
+  res.status(200).json({
+    id: result.id,
+    login: result.login,
+    name: result.name
+  });
+};

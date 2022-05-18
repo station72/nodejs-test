@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-interface IUser {
+export interface IUser {
   id: mongoose.Types.ObjectId,
   name: string,
   login: string,

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { userModel } from "../../data";
-import { ObjectIdInputDto } from "./dto";
+import { ObjectIdInputDto } from './dto/objectid.input.dto';
 
 export const deleteUser = async (
   req: Request<ObjectIdInputDto>,
