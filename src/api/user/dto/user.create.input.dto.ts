@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { validate } from '../../common/dto/validation/validate';
-import { UserValidationDefinition } from './validation/validation.definition';
+import { validate } from "../../common/dto/validation/validate";
+import { UserValidationDefinition } from "./validation/validation.definition";
 
 const validateUserCreateSchema = Joi.object({
   login: UserValidationDefinition.loginSchema.required(),
@@ -13,6 +13,7 @@ export class UserCreateInputDto {
   login: string;
   name: string;
   password: string;
+  repeatPassword: string;
 
   static validate(dto: UserCreateInputDto) {
     return validate(dto, validateUserCreateSchema);
