@@ -1,3 +1,5 @@
-export class TYPES {
-  static readonly App = 'App';
+export const TYPES = {
+  App: Symbol.for('App'),
+  UsersController: Symbol.for('UsersController'),
+  UsersManager: Symbol.for('UsersManager'),
 }

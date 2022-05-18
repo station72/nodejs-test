@@ -1,5 +1,5 @@
-// import "reflect-metadata";
-// import { injectable } from "inversify";
+import "reflect-metadata";
+import { inject, injectable } from "inversify";
 import { BaseController } from "../common/base.comroller";
 import asyncHandler from "express-async-handler";
 import { getUser } from "../api/user/read";
@@ -8,11 +8,12 @@ import { updateUser } from "../api/user/update";
 import { deleteUser } from "../api/user/delete";
 import { UserCreateInputDto } from "../api/user/dto/user.create.input.dto";
 import { NextFunction, Request, Response } from "express";
-import { UsersManager } from "../managers/users.manager";
+import { IUsersManager } from "../managers/users.manager";
+import { TYPES } from '../types.di';
 
-// @injectable()
+@injectable()
 export class UsersController extends BaseController {
-  constructor(private readonly _usersManager: UsersManager) {
+  constructor(@inject(TYPES.UsersManager) private readonly _usersManager: IUsersManager) {
     super();
   }
 
