@@ -1,10 +1,17 @@
 import express from "express";
 import { getAllRoutes } from "./api";
 import { errorMiddleware } from './middlewares';
+import { connectDb } from './data';
 
-const server = express();
+(async () => {
+  const server = express();
 
-server.use('/api', getAllRoutes())
-server.use(errorMiddleware)
+  const db = await connectDb();
 
-server.listen(3334);
+  server.use(express.json())
+  server.use('/api', getAllRoutes())
+  server.use(errorMiddleware)
+  
+  server.listen(3334);
+}) ()
+

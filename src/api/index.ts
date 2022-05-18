@@ -1,4 +1,4 @@
-import { Express, Router } from 'express'
+import { Router } from 'express'
 import { usersApiRouter } from './user'
 
 export function getAllRoutes(): Router {
