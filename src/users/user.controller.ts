@@ -21,7 +21,8 @@ export class UsersController extends BaseController {
     return "/users";
   }
 
-  bindRoutes() {
+  bindRoutes() { 
+    //TODO: move getUser updateUser deleteUser to controller and manager
     super.router
       .post(
         "/",
