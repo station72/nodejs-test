@@ -1,5 +1,6 @@
 import express from "express";
 import { getAllRoutes } from "./api";
+import { AppSettings } from './app.settings';
 import { connectDb } from './data';
 import { errorMiddleware } from './middlewares/error.middleware';
 
@@ -12,6 +13,6 @@ import { errorMiddleware } from './middlewares/error.middleware';
   server.use('/api', getAllRoutes())
   server.use(errorMiddleware)
   
-  server.listen(3334);
+  server.listen(AppSettings.server.port);
 }) ()
 

@@ -8,4 +8,8 @@ export class AppSettings {
   static readonly secrets = class {
     static readonly passwordHashSalt = 8;
   }
+
+  static readonly server = class {
+    static readonly port = 3334;
+  }
 }
