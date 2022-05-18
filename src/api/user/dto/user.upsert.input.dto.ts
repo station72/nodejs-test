@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { UserValidationDefinition } from ".";
-import { UnprocessableEntityError } from "../../../middlewares/errors";
+import { UnprocessableEntityError } from "../../../middlewares/error.middleware";
+import { UserValidationDefinition } from './validation/validation.definition';
 
 const validateUserUpsertSchema = Joi.object({
   id: UserValidationDefinition.objectIdSchema.required(),

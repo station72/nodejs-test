@@ -1,7 +1,7 @@
 import express from "express";
 import { getAllRoutes } from "./api";
-import { errorMiddleware } from './middlewares';
 import { connectDb } from './data';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 (async () => {
   const server = express();

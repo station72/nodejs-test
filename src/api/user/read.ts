@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { userModel } from "../../data";
+import { userModel } from '../../data/models/user';
 import { ObjectIdInputDto } from './dto/objectid.input.dto';
 import { IUserReadOutputDto } from './dto/user.read.output.dto';
 

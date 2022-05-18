@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { userModel } from "../../data";
-import { hashPassword } from "./common";
+import { userModel } from '../../data/models/user';
+import { hashPassword } from '../../tools/hash.password';
 
 import { UserCreateInputDto } from "./dto/user.create.input.dto";
 

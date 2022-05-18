@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { UnprocessableEntityError } from "./errors";
 
+/** Invalid data in request */
+export class UnprocessableEntityError extends Error {}
+
+/** Middleware for catching exception and wrapping it to http response*/
 export function errorMiddleware(
   err: TypeError,
   req: Request,
@@ -16,12 +19,4 @@ export function errorMiddleware(
   return res.status(500).send({
     message: err.message,
   });
-}
-
-export function verifyAccess(req: Request, res: Response, next: NextFunction) {
-  if (req.get("X-TEST-AUTH") === "TRUE") {
-    return next();
-  }
-
-  return res.sendStatus(401);
 }

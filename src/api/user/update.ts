@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { IUser, userModel } from "../../data";
-import { hashPassword } from "./common";
+import { IUser, userModel } from '../../data/models/user';
+import { hashPassword } from '../../tools/hash.password';
 import { ObjectIdInputDto } from "./dto/objectid.input.dto";
-import { IUserReadOutputDto } from './dto/user.read.output.dto';
+import { IUserReadOutputDto } from "./dto/user.read.output.dto";
 import { UserUpsertInputDto } from "./dto/user.upsert.input.dto";
 
 type UserUpsertInputDtoNoId = Omit<UserUpsertInputDto, "id">;
@@ -12,11 +12,10 @@ export const updateUser = async (
   res: Response<IUserReadOutputDto>,
   next: NextFunction
 ): Promise<void> => {
-  const id: string = req.params["id"];
+  const id = req.params.id;
   const dto = { ...req.body, id };
   UserUpsertInputDto.validate(dto);
 
-  
   let hashPass = !dto.password ? undefined : await hashPassword(dto.password);
 
   const newUserData: Omit<IUser, "id" | "login"> = {
@@ -28,12 +27,15 @@ export const updateUser = async (
     {
       id,
     },
-    newUserData
+    newUserData,
+    {
+      new: true
+    }
   );
 
   res.status(200).json({
     id: result.id,
     login: result.login,
-    name: result.name
+    name: result.name,
   });
 };
