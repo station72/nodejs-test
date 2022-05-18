@@ -28,8 +28,11 @@ export const createUser = async (
       .setHeader(
         "Location",
         `http://localhost:3334/api/users/${createdUser[0]._id}`
-      )
-      .send();
+      );
+
+    res.json({
+      id: createdUser[0].id
+    });
 
   } catch (error) {
     if (error?.code === 11000 && error?.keyValue?.login) {
