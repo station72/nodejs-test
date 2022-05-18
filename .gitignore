@@ -43,4 +43,4 @@ yarn.lock
 # ignore docker volumes
 docker
 
-build/**/*
+build
