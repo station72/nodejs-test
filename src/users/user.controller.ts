@@ -3,7 +3,6 @@ import { inject, injectable } from "inversify";
 import { BaseController } from "../common/base.comroller";
 import asyncHandler from "express-async-handler";
 import { verifyAccessMiddleware } from "../middlewares/verify.access.middleware";
-import { updateUser } from "../api/user/update";
 import { deleteUser } from "../api/user/delete";
 import { UserCreateInputDto } from "../api/user/dto/user.create.input.dto";
 import { NextFunction, Request, Response } from "express";
@@ -11,6 +10,7 @@ import { IUsersManager } from "../managers/users.manager";
 import { TYPES } from "../types.di";
 import { ObjectIdInputDto } from "../api/user/dto/objectid.input.dto";
 import { IUserReadOutputDto } from "../api/user/dto/user.read.output.dto";
+import { UserUpsertInputDtoNoId } from "../api/user/dto/user.upsert.input.dto";
 
 @injectable()
 export class UsersController extends BaseController {
@@ -33,7 +33,11 @@ export class UsersController extends BaseController {
         asyncHandler(this.createUser.bind(this))
       )
       .get(`/:id`, asyncHandler(this.getUser.bind(this)))
-      .put("/:id", verifyAccessMiddleware, asyncHandler<any>(updateUser))
+      .put(
+        "/:id",
+        verifyAccessMiddleware,
+        asyncHandler(this.updateUser.bind(this))
+      )
       .delete(`/:id`, verifyAccessMiddleware, asyncHandler<any>(deleteUser));
   }
 
@@ -68,5 +72,26 @@ export class UsersController extends BaseController {
     }
 
     return void res.status(200).json(user);
+  }
+
+  private async updateUser(
+    req: Request<ObjectIdInputDto, {}, UserUpsertInputDtoNoId>,
+    res: Response<IUserReadOutputDto>,
+    next: NextFunction
+  ): Promise<void> {
+    const { id } = req.params;
+    const dto = { ...req.body, id };
+
+    const result = await this._usersManager.updateUser(dto);
+
+    if (!result) {
+      return void res.sendStatus(404);
+    }
+
+    return void res.status(200).json({
+      id: result.id,
+      login: result.login,
+      name: result.name,
+    });
   }
 }

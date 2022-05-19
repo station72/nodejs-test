@@ -20,3 +20,5 @@ export class UserUpsertInputDto {
     return result;
   }
 }
+
+export type UserUpsertInputDtoNoId = Omit<UserUpsertInputDto, "id">;
