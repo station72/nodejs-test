@@ -14,7 +14,7 @@ export const deleteUser = async (
     _id: id,
   });
 
-  res.status(200).json({
+  return void res.status(200).json({
     deletedCount: deleteResult.deletedCount,
   });
 };

@@ -12,14 +12,16 @@ export function errorMiddleware(
   req: Request,
   res: Response<{ message: string }>,
   next: NextFunction
-) {
+): void {
   if (err instanceof UnprocessableEntityError || err instanceof UniqueDataAlreadyExistsError) {
-    return res.status(422).json({
+    return void res.status(422).json({
       message: err.message,
     });
   }
 
-  return res.status(500).send({
+  console.log(err)
+
+  return void res.status(500).send({
     message: err.message,
   });
 }

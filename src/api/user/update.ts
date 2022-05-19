@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { IUser, userModel } from '../../data/models/user';
-import { hashPassword } from '../../tools/hash.password';
+import { IUser, userModel } from "../../data/models/user";
+import { hashPassword } from "../../tools/hash.password";
 import { ObjectIdInputDto } from "./dto/objectid.input.dto";
 import { IUserReadOutputDto } from "./dto/user.read.output.dto";
 import { UserUpsertInputDto } from "./dto/user.upsert.input.dto";
@@ -18,10 +18,13 @@ export const updateUser = async (
 
   let hashPass = !dto.password ? undefined : await hashPassword(dto.password);
 
-  const newUserData: Omit<IUser, "id" | "login"> = {
+  const newUserData: Partial<Omit<IUser, "id" | "login">> = {
     name: dto.name,
-    passwordHash: hashPass,
   };
+
+  if (hashPass) {
+    newUserData.passwordHash = hashPass;
+  }
 
   const result = await userModel.findOneAndUpdate(
     {
@@ -29,11 +32,15 @@ export const updateUser = async (
     },
     newUserData,
     {
-      new: true
+      new: true,
     }
   );
 
-  res.status(200).json({
+  if (!result) {
+    return void res.sendStatus(404);
+  }
+
+  return void res.status(200).json({
     id: result.id,
     login: result.login,
     name: result.name,

@@ -21,7 +21,7 @@
     "noUnusedParameters": false,
     "noImplicitAny": false,
     "noImplicitThis": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "strictFunctionTypes": true
   },
   "include": [
