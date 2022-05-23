@@ -1,69 +1,67 @@
-import "reflect-metadata";
-import { inject, injectable } from "inversify";
-import { BaseController } from "../common/base.comroller";
-import asyncHandler from "express-async-handler";
-import { verifyAccessMiddleware } from "../middlewares/verify.access.middleware";
-import { deleteUser } from "../api/user/delete";
-import { UserCreateInputDto } from "../api/user/dto/user.create.input.dto";
-import { NextFunction, Request, Response } from "express";
-import { IUsersManager } from "../managers/users.manager";
-import { TYPES } from "../types.di";
-import { ObjectIdInputDto } from "../api/user/dto/objectid.input.dto";
-import { IUserReadOutputDto } from "../api/user/dto/user.read.output.dto";
-import { UserUpsertInputDtoNoId } from "../api/user/dto/user.upsert.input.dto";
+import 'reflect-metadata';
+import { inject, injectable } from 'inversify';
+import { BaseController } from '../common/base.comroller';
+import asyncHandler from 'express-async-handler';
+import { verifyAccessMiddleware } from '../middlewares/verify.access.middleware';
+import { deleteUser } from '../api/user/delete';
+import { UserCreateInputDto } from '../api/user/dto/user.create.input.dto';
+import { NextFunction, Request, Response } from 'express';
+import { IUsersManager } from '../managers/users.manager';
+import { TYPES } from '../types.di';
+import { ObjectIdInputDto } from '../api/user/dto/objectid.input.dto';
+import { IUserReadOutputDto } from '../api/user/dto/user.read.output.dto';
+import { UserUpsertInputDtoNoId } from '../api/user/dto/user.upsert.input.dto';
+import { ITransactionManager } from '../data/transaction.manager';
+import { container } from '../main';
 
 @injectable()
 export class UsersController extends BaseController {
-  constructor(
-    @inject(TYPES.UsersManager) private readonly _usersManager: IUsersManager
-  ) {
+  constructor(@inject(TYPES.UsersManager) private readonly _usersManager: IUsersManager) {
     super();
   }
 
   get controllerRoutePath(): string {
-    return "/users";
+    return '/users';
   }
 
   bindRoutes() {
-    //TODO: movew updateUser deleteUser to controller and manager
+    //TODO: move deleteUser to controller and manager
     super.router
-      .post(
-        "/",
-        verifyAccessMiddleware,
-        asyncHandler(this.createUser.bind(this))
-      )
+      .post('/', verifyAccessMiddleware, asyncHandler(this.createUser.bind(this)))
       .get(`/:id`, asyncHandler(this.getUser.bind(this)))
-      .put(
-        "/:id",
-        verifyAccessMiddleware,
-        asyncHandler(this.updateUser.bind(this))
-      )
+      .put('/:id', verifyAccessMiddleware, asyncHandler(this.updateUser.bind(this)))
       .delete(`/:id`, verifyAccessMiddleware, asyncHandler<any>(deleteUser));
   }
 
   private async createUser(
     req: Request<{}, {}, UserCreateInputDto, {}, {}>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
-    const createdUser = await this._usersManager.createUser(req.body);
+    //TODO move conteiner to DI
+    const transactionManager = container.get<ITransactionManager>(TYPES.TransactionManager);
+    await transactionManager.startTransaction();
 
-    res
-      .status(201)
-      .setHeader(
-        "Location",
-        `http://localhost:3334/api/users/${createdUser[0].id}`
-      );
+    try {
+      const createdUser = await this._usersManager.createUser(req.body);
+      await transactionManager.commit();
 
-    return void res.json({
-      id: createdUser[0].id,
-    });
+      res.status(201).setHeader('Location', `http://localhost:3334/api/users/${createdUser[0].id}`);
+
+      return void res.json({
+        id: createdUser[0].id,
+      });
+    } catch (error) {
+      await transactionManager.rollback();
+
+      throw error;
+    }
   }
 
   private async getUser(
     req: Request<ObjectIdInputDto>,
     res: Response<IUserReadOutputDto>,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const user = await this._usersManager.getUser(req.params);
 
@@ -77,7 +75,7 @@ export class UsersController extends BaseController {
   private async updateUser(
     req: Request<ObjectIdInputDto, {}, UserUpsertInputDtoNoId>,
     res: Response<IUserReadOutputDto>,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const { id } = req.params;
     const dto = { ...req.body, id };
